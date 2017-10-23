@@ -9,7 +9,7 @@ import (
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	temp := template.Must(template.New("index.html").ParseFiles("index.html"))
+	temp := template.Must(template.New("index.html").ParseFiles("templates/index.html"))
 	var data struct {
 		A1 string
 	}
