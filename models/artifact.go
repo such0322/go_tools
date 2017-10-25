@@ -74,10 +74,23 @@ type Artifact struct {
 	InsDate                  string        `db:"ins_date"`
 }
 
-func (a *Artifact) GetById(id int) {
-	db, err := sqlx.Connect("mysql", "root:123456@tcp(192.168.7.120:3306)/twod_enish_master_2?charset=utf8")
+var db *sqlx.DB
+
+func init() {
+	var err error
+	db, err = sqlx.Connect("mysql", "root:123456@tcp(192.168.7.120:3306)/twod_enish_master_2?charset=utf8")
 	if err != nil {
 		log.Fatalln(err)
 	}
+}
+
+func (a *Artifact) GetById(id int) {
 	db.Get(a, "select * from artifact where id = ?", id)
+}
+
+type Artifacts struct{}
+
+func (Artifacts) GetAll() (as []Artifact) {
+	db.Select(&as, "select * from artifact")
+	return as
 }
