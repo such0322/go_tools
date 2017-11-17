@@ -27,22 +27,18 @@ type Route struct {
 type Routes []Route
 
 var routes = Routes{
-	Route{
-		"Index",
-		"Get",
-		"/",
-		handler.Index,
-	},
-	Route{
-		"Login",
-		"Get",
-		"/login",
-		handler.Login,
-	},
-	Route{
-		"FeatureTool",
-		"Get",
-		"/feature/tool",
-		handler.Tool,
-	},
+	{"Index", "Get", "/", handler.Index},
+	// {"Login", "Get", "/login", handler.Login},
+	// {"FeatureTool", "Get", "/feature/tool", handler.ToolsController{}.Tool},
+	{"FeatureSearch", "Get", "/feature/search", handler.FeatureController{}.Search},
+	{"FeatureList", "Get", "/feature/list", handler.FeatureController{}.List},
+	{"FeatureDetail", "Get", "/feature/detail", handler.FeatureController{}.Get},
+	{"FeatureUpdate", "Put", "/feature/update", handler.FeatureController{}.Update},
+
+	//gift
+	{"GiftList", "Get", "/gift/list", handler.GiftController{}.List},
+	{"GiftNew", "Get", "/gift/new", handler.GiftController{}.NewGift},
+	{"GiftNew", "Post", "/gift/new", handler.GiftController{}.Create},
+	{"GiftRandomCode", "Get", "/gift/randomCode", handler.GiftController{}.RandomCode},
+	{"GiftBounsAll", "Get", "/gift/getBounsAll", handler.GiftController{}.GetBounsAll},
 }

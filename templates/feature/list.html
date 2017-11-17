@@ -1,0 +1,38 @@
+{{ define "feature/list" }}
+{{ template "header" . }}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-offset-1 col-md-10">
+      <table class="table">
+        <tr>
+          <th>id</th>
+          <th>title</th>
+          <th>start_date</th>
+          <th>end_date</th>
+          <th>open_date</th>
+          <th>close_date</th>
+          <th>feature_type</th>
+          <th>type</th>
+          <th>priority</th>
+          <th>ins_date</th>
+        </tr>
+        {{range .features}}
+        <tr>
+          <td>{{.ID}}</td>
+          <td>{{.Title.String}}</td>
+          <td>{{.StartDate.String}}</td>
+          <td>{{.EndDate.String}}</td>
+          <td>{{.OpenDate.String}}</td>
+          <td>{{.CloseDate.String}}</td>
+          <td>{{.FeatureType.String}}</td>
+          <td>{{.Type.String}}</td>
+          <td>{{.Priority}}</td>
+          <td>{{.InsDate}}</td>
+        <tr>
+        {{end}}
+      </table>
+    </div>
+  </div>
+</div>
+{{ template "footer" . }}
+{{ end }}

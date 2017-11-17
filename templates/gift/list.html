@@ -1,0 +1,38 @@
+{{ define "gift/list" }}
+{{ template "header" . }}
+<div class="container">
+
+  <div class="rows">
+    <div class="col-sm-offset-10 col-sm-2 text-right">
+      <a class="btn btn-default" href="/gift/new">新建礼包码</a>
+    </div>
+  </div>
+  <hr/>
+
+  <div class="rows">
+    <div class="col-sm-12 ">
+      <table class="table">
+        <tr>
+          <th>ID</th>
+          <th>礼包码</th>
+          <th>批次</th>
+          <th>平台</th>
+          <th>类型</th>
+          <th>数量</th>
+        </tr>
+        {{ range .CodeList}}
+        <tr>
+          <td>{{.ID}}</td>
+          <td>{{.Code}}</td>
+          <td>{{.Batch}}</td>
+          <td>{{.Channel}}</td>
+          <td>{{.Type}}</td>
+          <td>{{.Quantity}}</td>
+        </tr>
+        {{end}}
+      </table>
+    </div>
+  </div>
+</div>
+{{ template "footer" . }}
+{{ end }}
