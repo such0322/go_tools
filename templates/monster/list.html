@@ -1,0 +1,40 @@
+{{ define "/monster/list" }}
+{{ template "header" . }}
+<div class="container">
+  <div class="rows">
+    <div class="col-sm-12 ">
+      <h1>怪物信息</h1>
+      <hr/><br/>
+      <table class="table">
+        <tr>
+          <th>ID</th>
+          <th>名称</th>
+          <th>地区ID</th>
+          <th>grade</th>
+          <th>开放条件</th>
+          <th>模式</th>
+          <th>canclosed</th>
+          <th>操作</th>
+        </tr>
+        {{ range .Stages.Data}}
+        <tr>
+          <td>{{.ID}}</td>
+          <td>{{.Name}}</td>
+          <td>{{.AreaID}}</td>
+          <td>{{.Grade}}</td>
+          <td>{{.UnlockCondition}}</td>
+          <td>{{.Mode}}</td>
+          <td>{{.CanClosed}}</td>
+          <td><a class="btn btn-default" href="/monster/list?stage={{.ID}}">怪物列表</a></td>
+        </tr>
+        {{end}}
+      </table>
+    </div>
+    <div class="col-sm-12">
+      {{.Pager}}
+    </div>
+
+  </div>
+</div>
+{{ template "footer" . }}
+{{ end }}

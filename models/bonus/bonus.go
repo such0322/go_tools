@@ -1,7 +1,10 @@
 package bonus
 
 import (
+	"encoding/json"
+	"errors"
 	"log"
+	"strconv"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -15,7 +18,7 @@ const TypeGuildEXP = "guild_exp"
 const TypeItem = "item"
 const TypeItemBundle = "item_bundle"
 const TypeLUPI = "lupi"
-const TypeMap = "map"
+const TypeMap = "maps"
 const TypeMileage = "mileage"
 const TypeORB = "orb"
 const TypeRandomBox = "random_box"
@@ -48,9 +51,106 @@ func init() {
 	}
 }
 
+type BonusData struct {
+	Type        string `json:"type"`
+	ID          int    `json:"id,string"`
+	Quantity    int    `json:"quantity,string"`
+	AddContents string `json:"add_contents"`
+}
+
+// func (bd *BonusData) MarshalJSON() ([]byte, error) {
+// 	return []byte{}, nil
+// }
+
+func (b *BonusData) CreateRewards(types []string, ids []string, qs []string) []BonusData {
+	var bds []BonusData
+	for k, v := range types {
+		id, err := strconv.Atoi(ids[k])
+		if err != nil {
+			// TODO
+		}
+		q, err := strconv.Atoi(qs[k])
+		if err != nil {
+			// TODO
+		}
+		bd := BonusData{Type: v, ID: id, Quantity: q, AddContents: "[]"}
+		bds = append(bds, bd)
+	}
+	return bds
+}
+
 type Bonus struct {
-	Type        string
-	ID          int
-	Quantity    int
-	AddContents string
+	Type string `json:"type"`
+	Name string `json:"name"`
+
+	Obj Bonuser `json:"obj"`
+}
+
+type Bonuser interface {
+	GetRewardNames()
+	GetType() string
+}
+
+func NewBonus(bonusType string) (*Bonus, error) {
+	name, ok := RewardType[bonusType]
+	if !ok {
+		return nil, errors.New("NewBonus: type error")
+	}
+	bonus := Bonus{Type: bonusType, Name: name}
+	switch bonusType {
+	case TypeItem:
+		obj := BonusItems{}
+		bonus.Obj = &obj
+		return &bonus, nil
+	case TypeItemBundle:
+		obj := BonusItemBundles{}
+		bonus.Obj = &obj
+		return &bonus, nil
+	case TypeArtifact:
+		obj := BonusArtifacts{}
+		bonus.Obj = &obj
+		return &bonus, nil
+	case TypeEXP:
+		obj := BonusExp{}
+		bonus.Obj = &obj
+		return &bonus, nil
+	case TypeLUPI:
+		obj := BonusLupi{}
+		bonus.Obj = &obj
+		return &bonus, nil
+	case TypeGachaTicket:
+		obj := BonusGachas{}
+		bonus.Obj = &obj
+		return &bonus, nil
+	case TypeRune:
+		obj := BonusRunes{}
+		bonus.Obj = &obj
+		return &bonus, nil
+	case TypeMileage:
+		obj := BonusMileage{}
+		bonus.Obj = &obj
+		return &bonus, nil
+	case TypeORB:
+		obj := BonusOrbs{}
+		bonus.Obj = &obj
+		return &bonus, nil
+	case TypeMap:
+		obj := BonusMaps{}
+		bonus.Obj = &obj
+		return &bonus, nil
+	}
+
+	return nil, errors.New("NewBonus:error")
+}
+
+func (b *Bonus) GetRewardNames() {
+	b.Obj.GetRewardNames()
+}
+
+func (b *Bonus) ToJson() string {
+	json, err := json.Marshal(b)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(json)
 }

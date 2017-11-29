@@ -28,6 +28,8 @@ type Routes []Route
 
 var routes = Routes{
 	{"Index", "Get", "/", handler.Index},
+
+	{"StageList", "Get", "/stage/list", handler.StageController{}.List},
 	// {"Login", "Get", "/login", handler.Login},
 	// {"FeatureTool", "Get", "/feature/tool", handler.ToolsController{}.Tool},
 	{"FeatureSearch", "Get", "/feature/search", handler.FeatureController{}.Search},
@@ -41,4 +43,7 @@ var routes = Routes{
 	{"GiftNew", "Post", "/gift/new", handler.GiftController{}.Create},
 	{"GiftRandomCode", "Get", "/gift/randomCode", handler.GiftController{}.RandomCode},
 	{"GiftBounsAll", "Get", "/gift/getBounsAll", handler.GiftController{}.GetBounsAll},
+
+	//monster
+	{"MonsterList", "Get", "/monster/list", handler.MonsterController{}.List},
 }

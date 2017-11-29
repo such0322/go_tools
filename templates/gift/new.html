@@ -1,4 +1,4 @@
-{{ define "gift/new" }}
+{{ define "/gift/new" }}
 {{ template "header" . }}
 <link rel="stylesheet" href="/public/css/jquery.datetimepicker.min.css" >
 <div class="container">
@@ -54,8 +54,11 @@
 
     <div class="form-group">
       <label class="col-sm-2 control-label">奖励</label>
-      <div class=" col-sm-2">
+      <div class="col-sm-10">
         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#newReward">新增奖励</button>
+      </div>
+      <hr/>
+      <div id="rewards" class="col-sm-offset-2 col-sm-10">
       </div>
     </div>
 
@@ -88,7 +91,8 @@
               </select>
             </div>
           </div>
-
+          <div id="new_reward_bouns">
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -119,15 +123,109 @@ $(document).ready(function(){
     });
   });
 
+  $("#addReward").click(function(){
+    var type = $("#reward_type").val()
+    var id = $("#reward_id").val()
+    var quantity = $("#reward_quantity").val()
+    if(type == "" || id == "" || quantity <= 0){
+      alert("请选择奖励")
+      return
+    }
+
+    var tpl ='\
+    <div class="form-group">\
+      <label class="col-sm-1 control-label">类型</label>\
+      <div class="col-sm-2">\
+        <input name="reward_type" type="text" readonly class="form-control reward_type">\
+      </div>\
+      <label class="col-sm-1 control-label">ID</label>\
+      <div class="col-sm-2">\
+        <input name="reward_id" type="text" readonly class="form-control reward_id">\
+      </div>\
+      <label class="col-sm-1 control-label">数量</label>\
+      <div class="col-sm-2">\
+        <input name="reward_quantity" type="number" readonly class="form-control reward_quantity">\
+      </div>\
+      <div class="col-sm-1 pull-right">\
+        <button type="button" class="btn btn-default reward_move">\
+          <span class="glyphicon glyphicon-remove"></span>\
+        </button>\
+      </div>\
+    </div>'
+    var inner = $(tpl)
+    inner.find(".reward_type").val(type)
+    inner.find(".reward_id").val(id)
+    inner.find(".reward_quantity").val(quantity)
+    $("#rewards").append(inner)
+    $(".reward_move").click(function(){
+       $(this).parent().parent().remove()
+    })
+  });
+
+  var reward_datas=[]
   $("#reward_type").change(function(){
     var reward_type = $(this).val()
-    $.get("/gift/getBounsAll?reward_type="+reward_type,function(data,status){
-      if(status == "success"){
-        console.log(data);
-      }else{
-        alert("获取失败，请联系管理员")
+    if(reward_type == ""){
+      $("#new_reward_bouns").html("")
+      return
+    }
+    var status = 1;
+    if (reward_datas[reward_type] == undefined){
+      console.log(reward_type)
+      $.ajax({
+        url:"/gift/getBounsAll?reward_type="+reward_type,
+        async:false,
+        success:function(data){
+          rs = JSON.parse(data)
+          reward_datas[reward_type] = rs
+        },
+        error:function(jqXHR, textStatus, errorThrow){
+          alert(jqXHR.status+"!!!\r\n获取失败，请联系管理员")
+          status = 0
+        }
+      });
+    }
+    if(!status){
+      return
+    }
+    var tpl = '\
+      <div class="form-group">\
+        <label class="col-sm-2 control-label" id="reward_obj_name_label"></label>\
+        <div id="reward_obj_name" class="col-sm-4">\
+        </div>\
+      </div>\
+      <div class="form-group">\
+        <label class="col-sm-2 control-label">数量</label>\
+        <div class="col-sm-4">\
+          <input id="reward_quantity" type="number" class="form-control">\
+        </div>\
+      </div>'
+    var tplObj = $(tpl)
+    tplObj.find("#reward_obj_name_label").html(reward_datas[reward_type].name)
+    var inner
+    var reward_obj_name_hide = false
+    if (reward_datas[reward_type]!= undefined && JSON.stringify(reward_datas[reward_type].obj)=="{}"){
+      inner = '<input id="reward_id" type="text" class="form-control" value="1">'
+      reward_obj_name_hide = true
+    }else{
+      var sele = '\
+        <select id="reward_id" class="form-control">\
+          <option value="">--请选择--</option>\
+        </select>'
+      var opt=""
+      for(i=0;i<reward_datas[reward_type].obj.data.length;i++){
+        opt +='<option value="'+reward_datas[reward_type].obj.data[i]["id"]+'">'
+        +reward_datas[reward_type].obj.data[i]["id"]+" "+reward_datas[reward_type].obj.data[i]["name"]+'</option>'
       }
-    });
+      inner = $(sele).append(opt)
+    }
+
+    $("#new_reward_bouns").html(tplObj)
+    $("#reward_obj_name").html(inner)
+    if(reward_obj_name_hide){
+      $("#reward_obj_name").parent().addClass("hidden");
+    }
+
   });
 });
 </script>

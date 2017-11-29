@@ -1,4 +1,4 @@
-{{ define "gift/list" }}
+{{ define "/gift/list" }}
 {{ template "header" . }}
 <div class="container">
 
@@ -13,7 +13,7 @@
     <div class="col-sm-12 ">
       <table class="table">
         <tr>
-          <th>ID</th>
+          <!-- <th>ID</th> -->
           <th>礼包码</th>
           <th>批次</th>
           <th>平台</th>
@@ -22,16 +22,20 @@
         </tr>
         {{ range .CodeList}}
         <tr>
-          <td>{{.ID}}</td>
+          <!-- <td>{{.ID}}</td> -->
           <td>{{.Code}}</td>
           <td>{{.Batch}}</td>
-          <td>{{.Channel}}</td>
+          <td>{{if eq .Channel ""}}通用{{else}}{{.Channel}}{{end}}</td>
           <td>{{.Type}}</td>
           <td>{{.Quantity}}</td>
         </tr>
         {{end}}
       </table>
     </div>
+    <div class="col-sm-12">
+      {{.Pager}}
+    </div>
+
   </div>
 </div>
 {{ template "footer" . }}
