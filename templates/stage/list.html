@@ -17,13 +17,13 @@
           <th>canclosed</th>
           <th>操作</th>
         </tr>
-        {{ range .Stages.Data}}
+        {{ range .Stages}}
         <tr>
           <td>{{.ID}}</td>
           <td>{{.Name}}</td>
-          <td>{{.AreaID}}</td>
+          <td>{{if .AreaID.Valid}}{{.AreaID.Int64}}{{else}}{{end}}</td>
           <td>{{.Grade}}</td>
-          <td>{{.UnlockCondition}}</td>
+          <td>{{if .UnlockCondition.Valid}}{{.UnlockCondition.Int64}}{{else}}{{end}}</td>
           <td>{{.Mode}}</td>
           <td>{{.CanClosed}}</td>
           <td><a class="btn btn-default" href="/monster/list?stage={{.ID}}">怪物列表</a></td>

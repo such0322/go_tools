@@ -23,9 +23,8 @@ func (c StageController) List(w http.ResponseWriter, r *http.Request) {
 	}
 	stages := TM.Stages{}
 	pager := stages.GetPage(p, 100, "/stage/list")
-
 	c.data = make(map[string]interface{})
 	c.data["Pager"] = pager
-	c.data["Stages"] = stages
+	c.data["Stages"] = stages.GetData()
 	c.Render(w, r)
 }
