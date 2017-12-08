@@ -1,0 +1,86 @@
+{{define "/stage/get"}}
+{{ template "header" . }}
+<div class="container">
+  <div class="rows">
+    <div class="col-sm-12"><a class="btn btn-default pull-right" href="/stage/list">返回列表</a></div>
+    <div class="col-sm-12">
+        <h2>地图信息</h2>
+      <hr/>
+      <table class="table table-bordered">
+        <tr>
+          <th class="col-sm-1">ID</th><td  class="col-sm-2">{{.stage.ID}}</td>
+          <th class="col-sm-1">所属区域</th><td class="col-sm-2">{{.stage.AreaID.Int64}}</td>
+          <th class="col-sm-1">名称</th><td class="col-sm-2">{{.stage.Name}}</td>
+          <th class="col-sm-1">描述</th><td class="col-sm-2">{{.stage.Description}}</td>
+        </tr>
+        <tr>
+          <th >解锁条件</th><td >{{if .stage.UnlockCondition.Valid}}<a href="/stage/{{.stage.UnlockCondition.Int64}}">{{.stage.UnlockCondition.Int64}}</a>{{end}}</td>
+          <th >消费AP</th><td >{{.stage.Ap}}</td>
+          <th >经验值</th><td >{{.stage.Exp}}</td>
+          <th >金币</th><td >{{.stage.Lupi}}</td>
+        </tr>
+        <tr>
+          <th >mode</th><td >{{.stage.Mode}}</td>
+          <th >can_closed</th><td >{{.stage.CanClosed}}</td>
+          <th >npc_num</th><td >{{.stage.NpcNum}}</td>
+          <th >参与者上限</th><td >{{.stage.ParticipantLimit}}</td>
+        </tr>
+        <tr>
+          <th >推荐等级</th><td >{{.stage.RecommendedLevel}}</td>
+          <th >max_rank</th><td >{{.stage.MaxRank}}</td>
+          <th >plasma_mode</th><td >{{.stage.PlasmaMode}}</td>
+          <th >好友上限</th><td >{{if ne .stage.FriendDiff  0 }}+{{.stage.FriendDiff}}{{end}}</td>
+        </tr>
+        <tr>
+          <th >cost上限 </th><td >{{.stage.CostDiff}}</td>
+          <th >Ap上限 </th><td >{{.stage.ApDiff}}</td>
+          <th >装备</th><td >{{if .stage.Artifact.Valid}}<a href="/artifact/{{.stage.Artifact.Int64}}">{{.stage.Artifact.Int64}}</a>{{end}}</td>
+          <th >物品</th><td >{{if .stage.ItemBundleSet.Valid}}{{range $a := .stage.ItemBundleSet.String | jsonDecode}}<a href="/itemBundle/{{$a}}">{{$a}}</a> {{end}}{{end}}</td>
+        </tr>
+        <tr>
+          <th >剧情</th><td>{{if .stage.ScenarioID.Valid}}{{.stage.ScenarioID.String}}{{end}}</td>
+          <th >背景图</th><td>{{.stage.BgImg}}</td>
+          <th >Number</th><td>{{.stage.Number}}</td>
+          <th >背景ID</th><td>{{if .stage.LandscapeID.Valid}}{{.stage.LandscapeID.Int64}}{{end}}</td>
+        </tr>
+        <tr>
+          <th >背景音</th><td >{{if .stage.NormalBgm.Valid}}{{.stage.NormalBgm.String}}{{end}}</td>
+          <th >boss背景音</th><td >{{if .stage.BossBgm.Valid}}{{.stage.BossBgm.String}}{{end}}</td>
+          <th >继续次数</th><td >{{if .stage.ContinueCount.Valid}}{{.stage.ContinueCount.Int64}}次{{end}}</td>
+          <th >继续消耗</th><td >{{.stage.ContinueOrb}}水晶</td>
+        </tr>
+        <tr>
+          <th >无否无限</th><td >{{if .stage.IsInfinity.Valid}}{{.stage.IsInfinity.Int64}}{{end}}</td>
+          <th >Abilities</th><td >{{.stage.Abilities}}</td>
+          <th >开启日期</th><td >{{.stage.OpenDate}}</td>
+          <th >插入日期</th><td >{{.stage.InsDate}}</td>
+        </tr>
+      </table>
+    </div>
+    <div class="col-sm-12">
+      <h3>怪物信息</h2>
+      <hr/>
+      <table class="table table-bordered">
+        <tr>
+          <th class="col-sm-1">波次</th>
+          <th class="col-sm-1">WaveID</th>
+          <th class="col-sm-1">是否boss</th>
+          <th class="col-sm-9">怪物信息</th>
+        </tr>
+        {{range .orderMonsters}}
+        <tr>
+          <td>{{.Order}}</td>
+          <td>{{.WaveID}}</td>
+          <td>{{if .IsBoss}}是{{end}}</td>
+          <td>{{range .ML}}怪物ID:<a href="/monsterLevel/{{.ID}}">{{.MonsterID}}</a> 等级:{{.MonsterLevel}}<br/>{{end}}</td>
+        </tr>
+        {{end}}
+      </table>
+
+    </div>
+
+
+  </div>
+</div>
+{{ template "footer" . }}
+{{end}}

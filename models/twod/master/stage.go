@@ -52,8 +52,35 @@ type Stages struct {
 	list []*Stage
 }
 
+type StageMonsters struct {
+	Order  int
+	WaveID int
+	IsBoss bool
+	ML     []MonsterLevelFields
+}
+
+func (m *Stage) GetOrderMonsters() []StageMonsters {
+	sw := m.StageWaves
+	sms := []StageMonsters{}
+	for _, v := range sw.list {
+		sm := StageMonsters{}
+		sm.IsBoss = (v.data.IsBoss != 0)
+		sm.Order = v.data.OrderID
+		sm.WaveID = v.data.WaveID
+		for _, ws := range v.Waves.list {
+			sm.ML = append(sm.ML, ws.Ml.data)
+		}
+		sms = append(sms, sm)
+	}
+	return sms
+}
+
 func (m *Stage) GetById(id int) {
 	rows := db.QueryRowx("select * from stage where id = ?", id)
+	if err := rows.Err(); err != nil {
+		fmt.Println(err)
+		return
+	}
 	rows.StructScan(&m.data)
 }
 

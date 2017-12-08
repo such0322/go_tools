@@ -3,7 +3,7 @@
 <div class="container">
   <div class="rows">
     <div class="col-sm-12">
-      <h1>地图信息</h1>
+      <h2>地图信息</h2>
       <hr/>
       <br/>
       <table class="table">
@@ -26,7 +26,7 @@
           <td>{{if .UnlockCondition.Valid}}{{.UnlockCondition.Int64}}{{else}}{{end}}</td>
           <td>{{.Mode}}</td>
           <td>{{.CanClosed}}</td>
-          <td><a class="btn btn-default" href="/monster/list?stage={{.ID}}">怪物列表</a></td>
+          <td><a class="btn btn-default btn-sm" href="/stage/{{.ID}}">怪物列表</a></td>
         </tr>
         {{end}}
       </table>

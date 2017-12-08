@@ -1,5 +1,10 @@
 package libs
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 func AppendUniqueInt(ints []int, new_ints ...int) []int {
 	for _, ni := range new_ints {
 		in := false
@@ -14,4 +19,13 @@ func AppendUniqueInt(ints []int, new_ints ...int) []int {
 		}
 	}
 	return ints
+}
+
+func JsonDecode(jsonStr string) interface{} {
+	var data interface{}
+	err := json.Unmarshal([]byte(jsonStr), &data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return data
 }

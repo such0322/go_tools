@@ -4,10 +4,27 @@ import (
 	"net/http"
 	TM "odin_tools/models/twod/master"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 type StageController struct {
 	Controller
+}
+
+func (c StageController) Get(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["id"])
+	stage := TM.Stage{}
+	stage.GetById(id)
+	stage.LoadStageWaves().LoadWaves().LoadMonsters()
+
+	c.data = make(map[string]interface{})
+	c.data["stage"] = stage.GetData()
+	c.data["orderMonsters"] = stage.GetOrderMonsters()
+	c.tpl = "/stage/get"
+	c.Render(w, r)
+
 }
 
 func (c StageController) List(w http.ResponseWriter, r *http.Request) {

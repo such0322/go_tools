@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"odin_tools/libs"
 	"strings"
 )
 
@@ -13,12 +14,13 @@ type Controller struct {
 	tpl  string
 }
 
-func mapValue(m map[interface{}]interface{}, key interface{}) interface{} {
-	return m[key]
+func test(a interface{}) string {
+	return "this is test"
 }
 
 var funcMap = template.FuncMap{
-	"mapValue": mapValue,
+	"test":       test,
+	"jsonDecode": libs.JsonDecode,
 }
 
 func (c *Controller) Render(w http.ResponseWriter, r *http.Request) {
@@ -31,8 +33,7 @@ func (c *Controller) Render(w http.ResponseWriter, r *http.Request) {
 	file.WriteString(c.tpl)
 	file.WriteString(".html")
 
-	tmpl := template.Must(template.New(tpl[len(tpl)-1]).ParseFiles(file.String(), "templates/header.html", "templates/footer.html"))
-	tmpl.Funcs(funcMap)
+	tmpl := template.Must(template.New(tpl[len(tpl)-1]).Funcs(funcMap).ParseFiles(file.String(), "templates/header.html", "templates/footer.html"))
 	if err := tmpl.ExecuteTemplate(w, c.tpl, c.data); err != nil {
 		log.Fatal(err)
 	}

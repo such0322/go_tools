@@ -27,9 +27,12 @@ type Route struct {
 type Routes []Route
 
 var routes = Routes{
-	{"Index", "Get", "/", handler.Index},
+	{"Index", "Get", "/", handler.IndexController{}.Index},
+
+	{"AuthLogin", "Get", "/auth/login", handler.AuthController{}.Login},
 
 	{"StageList", "Get", "/stage/list", handler.StageController{}.List},
+	{"StageDetail", "Get", "/stage/{id:[0-9]+}", handler.StageController{}.Get},
 	// {"Login", "Get", "/login", handler.Login},
 	// {"FeatureTool", "Get", "/feature/tool", handler.ToolsController{}.Tool},
 	{"FeatureSearch", "Get", "/feature/search", handler.FeatureController{}.Search},
