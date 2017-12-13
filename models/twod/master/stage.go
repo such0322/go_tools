@@ -4,10 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 	"html/template"
-	"odin_tools/libs"
+	"odin_tool/libs"
+	"sort"
 )
 
-type StageFields struct {
+//StageFields 表字段
+type stageFields struct {
 	ID               int
 	AreaID           sql.NullInt64 `db:"area_id"`
 	Grade            int
@@ -44,113 +46,103 @@ type StageFields struct {
 }
 
 type Stage struct {
-	data       StageFields
-	StageWaves *StageWaves
+	stageFields
+	StageWaves StageWaves
 }
 
-type Stages struct {
-	list []*Stage
-}
+type Stages []Stage
 
 type StageMonsters struct {
 	Order  int
 	WaveID int
 	IsBoss bool
-	ML     []MonsterLevelFields
+	MLs    MonsterLevels
+}
+type SMSlice []StageMonsters
+
+func (m SMSlice) Len() int {
+	return len(m)
+}
+func (m SMSlice) Less(i, j int) bool {
+	if m[i].Order < m[j].Order {
+		return true
+	} else if m[i].Order > m[j].Order {
+		return false
+	} else {
+		return m[i].WaveID < m[j].WaveID
+	}
+
+}
+func (m SMSlice) Swap(i, j int) {
+	m[i], m[j] = m[j], m[i]
 }
 
 func (m *Stage) GetOrderMonsters() []StageMonsters {
 	sw := m.StageWaves
-	sms := []StageMonsters{}
-	for _, v := range sw.list {
+	sms := SMSlice{}
+	for _, v := range sw {
 		sm := StageMonsters{}
-		sm.IsBoss = (v.data.IsBoss != 0)
-		sm.Order = v.data.OrderID
-		sm.WaveID = v.data.WaveID
-		for _, ws := range v.Waves.list {
-			sm.ML = append(sm.ML, ws.Ml.data)
-		}
+		sm.IsBoss = (v.IsBoss != 0)
+		sm.Order = v.OrderID
+		sm.WaveID = v.WaveID
+		sm.MLs = sw.LoadWaves().LoadMonsters()
 		sms = append(sms, sm)
+		sort.Sort(sms)
 	}
 	return sms
 }
 
-func (m *Stage) GetById(id int) {
+func (m *Stage) LoadById(id int) {
 	rows := db.QueryRowx("select * from stage where id = ?", id)
 	if err := rows.Err(); err != nil {
 		fmt.Println(err)
 		return
 	}
-	rows.StructScan(&m.data)
-}
-
-func (m *Stage) GetData() *StageFields {
-	return &m.data
+	rows.StructScan(&m.stageFields)
 }
 
 //LoadStageWaves 获取对应stageWaves
-func (m *Stage) LoadStageWaves() *StageWaves {
-	if m.data.ID == 0 {
-		return new(StageWaves)
+func (m *Stage) LoadStageWaves() StageWaves {
+	if m.ID == 0 {
+		return StageWaves{}
 	}
-	stageWaves := new(StageWaves)
-	stageWaves.LoadByStageID(m.data.ID)
+	stageWave := StageWave{}
+	stageWaves := stageWave.LoadByStageID(m.ID)
 	m.StageWaves = stageWaves
 	return m.StageWaves
 }
 
-// func (m *Stage) LoadWaves() *Stage {
-// 	if len(m.StageWaves.GetList()) == 0 {
-// 		return m
-// 	}
-// 	m.StageWaves.LoadWares()
-// 	return m
-// }
-
-// func (m *Stage) LoadMonsters() {
-//
-// }
-
-// func (ms *Stages) GetAll() {
-// 	err := db.Select(ms.Data, "select * from stage")
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// }
-
-func (ms *Stages) GetPage(page int, prePage int, url string) (pager template.HTML) {
+func (m Stage) GetPage(page int, prePage int, url string, where string, args ...interface{}) (*Stages, template.HTML) {
 	if page <= 0 {
 		page = 1
 	}
+	var cquery, query string
+	if where == "" {
+		cquery = "select count(*) from stage"
+		query = "select * from stage limit ?, ?"
+	} else {
+		cquery = fmt.Sprintf("select count(*) from stage where %s", where)
+		query = fmt.Sprintf(`select * from stage where  %s limit ?, ?`, where)
+	}
 	var count int
-	if err := db.Get(&count, "select count(*) from stage"); err != nil {
+	if err := db.Get(&count, cquery, args...); err != nil {
 		fmt.Println(err)
 	}
 	pages := &libs.Pages{Count: count, Page: page, PrePage: prePage, Url: url}
 	offset := (page - 1) * prePage
-	rows, err := db.Queryx("select * from stage  limit ?, ?", offset, prePage)
+
+	args = append(args, offset, prePage)
+	rows, err := db.Queryx(query, args...)
 	if err != nil {
 		fmt.Println(err)
 	}
+	stages := Stages{}
 	for rows.Next() {
-		s := new(Stage)
-		err := rows.StructScan(&s.data)
+		err := rows.StructScan(&m.stageFields)
 		if err != nil {
-			fmt.Println(err)
+			continue
 		}
-		ms.list = append(ms.list, s)
+		stages = append(stages, m)
 	}
-	return template.HTML(pages.Get())
-}
-
-func (ms *Stages) GetList() []*Stage {
-	return ms.list
-}
-
-func (ms *Stages) GetData() []StageFields {
-	data := []StageFields{}
-	for _, v := range ms.list {
-		data = append(data, v.data)
-	}
-	return data
+	return &stages, pages.Get()
 }

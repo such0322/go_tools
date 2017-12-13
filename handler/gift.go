@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"odin_tools/models/bonus"
-	BMi "odin_tools/models/bridge/misc"
+	"odin_tool/models/bonus"
+	BMi "odin_tool/models/bridge/misc"
 	"strconv"
 )
 

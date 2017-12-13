@@ -2,7 +2,9 @@ package libs
 
 import (
 	"fmt"
+	"html/template"
 	"math"
+	"strings"
 )
 
 type Pages struct {
@@ -19,14 +21,20 @@ var pageTpl string = `
 		</ul>
 	</nav>`
 
-func (p *Pages) Get() string {
+func (p *Pages) Get() template.HTML {
 	pageCount := int(math.Ceil(float64(p.Count) / float64(p.PrePage)))
+	url := p.Url
+	if strings.ContainsRune(url, '?') {
+		url = url + "&p="
+	} else {
+		url = url + "?p="
+	}
 	var previousActive, previousPage, nextActive, nextPage string
 	if p.Page-1 <= 0 {
 		previousActive = `class="disabled"`
 		previousPage = "javascript:void(0)"
 	} else {
-		previousPage = fmt.Sprintf("%s?p=%d", p.Url, p.Page-1)
+		previousPage = fmt.Sprintf(url+"%d", p.Page-1)
 	}
 	previous := fmt.Sprintf(`<li %s>
 		<a href="%s" aria-label="Previous">
@@ -37,7 +45,7 @@ func (p *Pages) Get() string {
 		nextActive = `class="disabled"`
 		nextPage = "javascript:void(0)"
 	} else {
-		nextPage = fmt.Sprintf("%s?p=%d", p.Url, p.Page+1)
+		nextPage = fmt.Sprintf(url+"%d", p.Page+1)
 	}
 
 	next := fmt.Sprintf(`<li %s>
@@ -53,7 +61,7 @@ func (p *Pages) Get() string {
 			active = `class="active"`
 		}
 		if i == 1 || i == pageCount || (p.Page-3 <= i && i <= p.Page+3) {
-			pages += fmt.Sprintf(`<li %s ><a href="%s?p=%d">%d</a></li>`, active, p.Url, i, i)
+			pages += fmt.Sprintf(`<li %s ><a href="`+url+`%d">%d</a></li>`, active, i, i)
 		} else if !pDotLi && i < p.Page-3 {
 			pDotLi = true
 			pages += `<li class="disabled"><a href="javascript:void(0)">...</a></li>`
@@ -65,6 +73,6 @@ func (p *Pages) Get() string {
 	}
 	pageTpl := fmt.Sprintf(pageTpl, previous, pages, next)
 
-	return pageTpl
+	return template.HTML(pageTpl)
 
 }

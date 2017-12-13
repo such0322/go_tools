@@ -2,7 +2,7 @@ package master
 
 import (
 	"fmt"
-	"odin_tools/libs"
+	"odin_tool/libs"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -16,15 +16,13 @@ type WaveFields struct {
 }
 
 type Wave struct {
-	data WaveFields
-	Ml   *MonsterLevel
+	WaveFields
+	Ml MonsterLevel
 }
 
-type Waves struct {
-	list []*Wave
-}
+type Waves []Wave
 
-func (ms *Waves) LoadByWaveIDs(ids []int) {
+func (m *Wave) LoadByWaveIDs(ids []int) Waves {
 	query := "select * from wave where wave_id in (?)"
 	query, args, err := sqlx.In(query, ids)
 	if err != nil {
@@ -34,51 +32,42 @@ func (ms *Waves) LoadByWaveIDs(ids []int) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	ms := Waves{}
 	for rows.Next() {
-		wave := new(Wave)
-		if err := rows.StructScan(&wave.data); err != nil {
-			fmt.Println(err)
+		w := Wave{}
+		if err := rows.StructScan(&w.WaveFields); err != nil {
+			continue
 		} else {
-			ms.list = append(ms.list, wave)
+			ms = append(ms, w)
 		}
 	}
+	return ms
 }
 
-func (ms *Waves) LoadMonsters() *MonsterLevels {
-	ml := new(MonsterLevels)
-	if len(ms.list) == 0 {
-		return ml
+func (ms Waves) LoadMonsters() MonsterLevels {
+	if len(ms) == 0 {
+		return MonsterLevels{}
 	}
 	mlIDs := ms.GetMonsterLevelIDs()
-	ml.LoadByIDs(mlIDs)
-	mapper := make(map[int]*MonsterLevel)
-	for _, v := range ml.list {
-		mapper[v.data.ID] = v
+	ml := MonsterLevel{}
+	mls := ml.LoadByIDs(mlIDs)
+	mapper := make(map[int]MonsterLevel)
+	for _, v := range mls {
+		mapper[v.ID] = v
 	}
-	for _, v := range ms.list {
-		v.Ml = mapper[v.data.MonsterLevelID]
+	for _, v := range ms {
+		v.Ml = mapper[v.MonsterLevelID]
 	}
-	return ml
+	return mls
 }
 
-func (ms *Waves) GetMonsterLevelIDs() (ids []int) {
-	len := len(ms.list)
+func (ms Waves) GetMonsterLevelIDs() (ids []int) {
+	len := len(ms)
 	if len == 0 {
 		return ids
 	}
-	for _, v := range ms.list {
-		ids = libs.AppendUniqueInt(ids, v.data.MonsterLevelID)
+	for _, v := range ms {
+		ids = libs.AppendUniqueInt(ids, v.MonsterLevelID)
 	}
 	return ids
-}
-
-func (ms *Waves) GetList() []*Wave {
-	return ms.list
-}
-
-func (ms *Waves) SetList(waves ...*Wave) {
-	for _, w := range waves {
-		ms.list = append(ms.list, w)
-	}
-
 }

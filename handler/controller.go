@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"odin_tools/libs"
+	"odin_tool/libs"
 	"strings"
 )
 

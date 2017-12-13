@@ -3,10 +3,11 @@ package misc
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"log"
 	"math/rand"
-	"odin_tools/libs"
-	"odin_tools/models/bonus"
+	"odin_tool/libs"
+	"odin_tool/models/bonus"
 	"time"
 
 	"database/sql"
@@ -155,7 +156,7 @@ func (m *GiftCodes) GetAll() (data []GiftCode) {
 	return
 }
 
-func (m *GiftCodes) GetPage(page int, prePage int, url string) (data []GiftCode, pager string) {
+func (m *GiftCodes) GetPage(page int, prePage int, url string) (data []GiftCode, pager template.HTML) {
 	var count int
 	if err := db.Get(&count, "SELECT count(*) FROM gift_code"); err != nil {
 		fmt.Println(err)

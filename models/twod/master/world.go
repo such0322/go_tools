@@ -1,12 +1,10 @@
 package master
 
 import (
-	"odin_tools/models"
-
-	_ "github.com/go-sql-driver/mysql"
+	"errors"
 )
 
-type World struct {
+type WorldFields struct {
 	ID                          int
 	Name                        string
 	Chapter                     string
@@ -18,19 +16,44 @@ type World struct {
 	EndDate                     string `db:"end_date"`
 	InsDate                     string `db:"ins_date"`
 }
-
-type Worlds struct {
-	data []World
-	models.Model
+type World struct {
+	WorldFields
+	Areas *Areas
 }
 
-func NewWorld() *Worlds {
-	var worlds = new(Worlds)
-	worlds.SetTable("world")
-	worlds.SetData(worlds.data)
-	worlds.SetSchema(World{})
-	return worlds
+type Worlds []World
+
+func (m *World) GetByID(id int) *World {
+	rows := db.QueryRowx("select * from world where id = ?", id)
+	if err := rows.Err(); err != nil {
+		panic(err)
+	}
+	rows.StructScan(&m.WorldFields)
+	return m
 }
-func (m *Worlds) GetData() []World {
-	return m.data
+
+func (m *World) LoadAreas() *Areas {
+	if m.ID == 0 {
+		panic(errors.New("LoadAreas没有找到World;"))
+	}
+	area := Area{}
+	m.Areas = area.LoadByWorldID(m.ID)
+	return m.Areas
+}
+
+func (m World) LoadAll() *Worlds {
+	rows, err := db.Queryx("select * from world")
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+	worlds := Worlds{}
+	for rows.Next() {
+		err = rows.StructScan(&m.WorldFields)
+		if err != nil {
+			continue
+		}
+		worlds = append(worlds, m)
+	}
+	return &worlds
 }

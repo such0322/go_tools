@@ -3,7 +3,7 @@ package master
 import (
 	"database/sql"
 	"fmt"
-	"odin_tools/libs"
+	"odin_tool/libs"
 )
 
 type StageWaveFields struct {
@@ -19,77 +19,52 @@ type StageWaveFields struct {
 }
 
 type StageWave struct {
-	data  StageWaveFields
-	Waves *Waves
+	StageWaveFields
+	Waves Waves
 }
 
-func (m *StageWave) GetData() StageWaveFields {
-	return m.data
-}
+type StageWaves []StageWave
 
-type StageWaves struct {
-	list []*StageWave
-}
-
-func (ms *StageWaves) GetWaveIds() (ids []int) {
-	len := len(ms.list)
-	if len == 0 {
+func (ms StageWaves) GetWaveIds() (ids []int) {
+	if len(ms) == 0 {
 		return ids
 	}
-	for _, v := range ms.list {
-		ids = libs.AppendUniqueInt(ids, v.data.WaveID)
+	for _, v := range ms {
+		ids = libs.AppendUniqueInt(ids, v.WaveID)
 	}
 	return ids
 }
 
-func (ms *StageWaves) LoadWaves() *Waves {
-	waves := new(Waves)
-	if len(ms.list) == 0 {
-		return waves
+func (ms StageWaves) LoadWaves() Waves {
+	wave := Wave{}
+	if len(ms) == 0 {
+		return Waves{}
 	}
 	wids := ms.GetWaveIds()
-	waves.LoadByWaveIDs(wids)
-	mapper := make(map[int][]*Wave)
-	for _, w := range waves.list {
-		mapper[w.data.WaveID] = append(mapper[w.data.WaveID], w)
+	waves := wave.LoadByWaveIDs(wids)
+	mapper := make(map[int][]Wave)
+	for _, w := range waves {
+		mapper[w.WaveID] = append(mapper[w.WaveID], w)
 	}
-	for _, sw := range ms.list {
-		w := new(Waves)
-		w.SetList(mapper[sw.data.WaveID]...)
-		sw.Waves = w
+	for k, sw := range ms {
+		ms[k].Waves = append(sw.Waves, mapper[sw.WaveID]...)
 	}
 	return waves
 }
 
-// func (ms *StageWaves) LoadMonsters() *StageWaves {
-// 	fmt.Println("load Monsters")
-// 	if len(ms.list) == 0 {
-// 		//TODO panic
-// 		return ms
-// 	}
-//
-// 	for _, v := range ms.list {
-// 		fmt.Println(v)
-// 	}
-//
-// 	return ms
-// }
-
-func (ms *StageWaves) LoadByStageID(stageID int) {
+func (m *StageWave) LoadByStageID(stageID int) StageWaves {
 	rows, err := db.Queryx("select * from stage_wave where stage_id = ? ", stageID)
 	if err != nil {
 		fmt.Println(err)
 	}
+	var ms StageWaves
 	for rows.Next() {
-		sw := new(StageWave)
-		if err := rows.StructScan(&sw.data); err != nil {
-			fmt.Println(err)
+		sw := StageWave{}
+		if err := rows.StructScan(&sw.StageWaveFields); err != nil {
+			continue
 		} else {
-			ms.list = append(ms.list, sw)
+			ms = append(ms, sw)
 		}
 	}
-}
-
-func (ms *StageWaves) GetList() []*StageWave {
-	return ms.list
+	return ms
 }

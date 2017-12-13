@@ -2,7 +2,7 @@ package main
 
 import (
 	"net/http"
-	"odin_tools/handler"
+	"odin_tool/handler"
 
 	"github.com/gorilla/mux"
 )
@@ -28,8 +28,13 @@ type Routes []Route
 
 var routes = Routes{
 	{"Index", "Get", "/", handler.IndexController{}.Index},
+	{"Error", "Get", "/error", handler.IndexController{}.Error},
 
 	{"AuthLogin", "Get", "/auth/login", handler.AuthController{}.Login},
+
+	{"WorldList", "Get", "/world/list", handler.WorldController{}.List},
+
+	{"AreaList", "Get", "/area/list", handler.AreaController{}.List},
 
 	{"StageList", "Get", "/stage/list", handler.StageController{}.List},
 	{"StageDetail", "Get", "/stage/{id:[0-9]+}", handler.StageController{}.Get},
@@ -46,6 +51,9 @@ var routes = Routes{
 	{"GiftNew", "Post", "/gift/new", handler.GiftController{}.Create},
 	{"GiftRandomCode", "Get", "/gift/randomCode", handler.GiftController{}.RandomCode},
 	{"GiftBounsAll", "Get", "/gift/getBounsAll", handler.GiftController{}.GetBounsAll},
+
+	//mission
+	{"MissionDailyList", "Get", "/mission/daily/list", handler.MissionController{}.DailyList},
 
 	//monster
 	{"MonsterList", "Get", "/monster/list", handler.MonsterController{}.List},

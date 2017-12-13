@@ -1,0 +1,44 @@
+{{ define "/world/list" }}
+{{ template "header" . }}
+<div class="container">
+  <div class="rows">
+    <div class="col-sm-12 ">
+      <h1>世界</h1>
+      <hr/><br/>
+      <table class="table">
+        <tr>
+          <th>ID</th>
+          <th>名称</th>
+          <th>章节</th>
+          <th>解锁条件</th>
+          <th>ContentsLockUnlockCondition</th>
+          <th>背景图片</th>
+          <th>技能槽解锁</th>
+          <th>开始日期</th>
+          <th>结束日期</th>
+          <th>操作</th>
+        </tr>
+        {{ range .worlds}}
+        <tr>
+          <td>{{.ID}}</td>
+          <td>{{.Name}}</td>
+          <td>{{.Chapter}}</td>
+          <td>{{.UnlockCondition}}</td>
+          <td>{{.ContentsLockUnlockCondition}}</td>
+          <td>{{.BgImg}}</td>
+          <td>{{if ne .SlotDiff 0}}+{{.SlotDiff}}{{end}}</td>
+          <td>{{.StartDate}}</td>
+          <td>{{.EndDate}}</td>
+          <td><a class="btn btn-default btn-sm" href="/area/list?world_id={{.ID}}">地区列表</a></td>
+        </tr>
+        {{end}}
+      </table>
+    </div>
+    <div class="col-sm-12">
+      {{.Pager}}
+    </div>
+
+  </div>
+</div>
+{{ template "footer" . }}
+{{ end }}

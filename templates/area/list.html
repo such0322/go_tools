@@ -1,0 +1,44 @@
+{{ define "/area/list" }}
+{{ template "header" . }}
+<div class="container">
+  <div class="rows">
+    <div class="col-sm-12 ">
+      <h1>地区</h1>
+      <hr/><br/>
+      <table class="table">
+        <tr>
+          <th>ID</th>
+          <th>世界ID</th>
+          <th>名字</th>
+          <th>序号</th>
+          <th>推荐战力</th>
+          <th>背景图片</th>
+          <th>说明</th>
+          <th>开始日期</th>
+          <th>结束日期</th>
+          <th>操作</th>
+        </tr>
+        {{ range .areas}}
+        <tr>
+          <td>{{.ID}}</td>
+          <td>{{.WorldID}}</td>
+          <td>{{.Name}}</td>
+          <td>{{.Number}}</td>
+          <td>{{.RecommendPower}}</td>
+          <td>{{.BgImg}}</td>
+          <td>{{if .AreaText.Valid}}{{.AreaText.String}}{{end}}</td>
+          <td>{{.StartDate}}</td>
+          <td>{{.EndDate}}</td>
+          <td><a class="btn btn-default btn-sm" href="/stage/list?area_id={{.ID}}">关卡列表</a></td>
+        </tr>
+        {{end}}
+      </table>
+    </div>
+    <div class="col-sm-12">
+      {{.Pager}}
+    </div>
+
+  </div>
+</div>
+{{ template "footer" . }}
+{{ end }}

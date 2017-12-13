@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"odin_tools/models"
+	"odin_tool/models"
 )
 
 type ToolsController struct{}

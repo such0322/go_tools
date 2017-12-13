@@ -33,41 +33,28 @@ type MonsterLevelFields struct {
 	InsDate                   string `db:"ins_date"`
 }
 type MonsterLevel struct {
-	data MonsterLevelFields
+	MonsterLevelFields
 }
-type MonsterLevels struct {
-	list []*MonsterLevel
-}
+type MonsterLevels []MonsterLevel
 
-func (ms *MonsterLevels) LoadByIDs(ids []int) {
+func (m *MonsterLevel) LoadByIDs(ids []int) MonsterLevels {
 	query := "select * from monster_level where id in (?)"
 	query, args, err := sqlx.In(query, ids)
 	if err != nil {
 		fmt.Println(err)
 	}
 	rows, err := db.Queryx(query, args...)
+	if err != nil {
+		fmt.Println(err)
+	}
+	mls := MonsterLevels{}
 	for rows.Next() {
-		ml := new(MonsterLevel)
-		if err := rows.StructScan(&ml.data); err != nil {
-			fmt.Println(err)
+		ml := MonsterLevel{}
+		if err := rows.StructScan(&ml.MonsterLevelFields); err != nil {
+			continue
 		} else {
-			ms.list = append(ms.list, ml)
+			mls = append(mls, ml)
 		}
 	}
+	return mls
 }
-
-// func (ms *MonsterLevels) GetPage(page int, prePage int, url string, where string) template.HTML {
-// 	if page <= 0 {
-// 		page = 1
-// 	}
-// 	var count int
-// 	if err := db.Get(&count, fmt.Sprintf("select count(*) from %s %s", TABLE, where)); err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	pages := &libs.Pages{Count: count, Page: page, PrePage: prePage, Url: url}
-// 	offset := (page - 1) * prePage
-// 	if err := db.Select(&(ms.data), fmt.Sprintf("select * from %s %s limit ?, ?", TABLE, where), offset, prePage); err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	return template.HTML(pages.Get())
-// }

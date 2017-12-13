@@ -72,7 +72,7 @@
           <td>{{.Order}}</td>
           <td>{{.WaveID}}</td>
           <td>{{if .IsBoss}}是{{end}}</td>
-          <td>{{range .ML}}怪物ID:<a href="/monsterLevel/{{.ID}}">{{.MonsterID}}</a> 等级:{{.MonsterLevel}}<br/>{{end}}</td>
+          <td>{{range .MLs}}LevelID:<a href="/monsterLevel/{{.ID}}">{{.ID}}</a> 怪物ID:<a href="/monster/{{.MonsterID}}">{{.MonsterID}}</a> 等级:{{.MonsterLevel}} <br/>{{end}}</td>
         </tr>
         {{end}}
       </table>
