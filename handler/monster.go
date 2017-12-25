@@ -22,7 +22,7 @@ func (c MonsterController) List(w http.ResponseWriter, r *http.Request) {
 	stage.LoadStageWaves().LoadWaves().LoadMonsters()
 
 	fmt.Fprintf(w, "%#v\n", stage)
-	c.data = make(map[string]interface{})
-	c.data["stage"] = stage
+	c.Data = make(map[string]interface{})
+	c.Data["stage"] = stage
 	// c.Render(w, r)
 }

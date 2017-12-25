@@ -19,13 +19,17 @@ func (c AreaController) List(w http.ResponseWriter, r *http.Request) {
 	}()
 	worldID, err := strconv.Atoi(r.FormValue("world_id"))
 	if err != nil {
-		panic("参数错误")
+		fmt.Println("参数错误")
+	}
+	area := TM.Area{}
+	areas := TM.Areas{}
+	if worldID != 0 {
+		areas = area.GetByWorldID(worldID)
+	} else {
+		areas = area.GetAll()
 	}
 
-	area := TM.Area{}
-	areas := area.LoadByWorldID(worldID)
-
-	c.data = make(map[string]interface{})
-	c.data["areas"] = areas
+	c.Data = make(map[string]interface{})
+	c.Data["areas"] = areas
 	c.Render(w, r)
 }

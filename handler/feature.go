@@ -9,7 +9,7 @@ type FeatureController struct {
 }
 
 func (c FeatureController) Search(w http.ResponseWriter, r *http.Request) {
-	c.tpl = "feature/search"
+	c.Tpl = "feature/search"
 	c.Render(w, r)
 }
 

@@ -84,7 +84,7 @@ func init() {
 	}
 }
 
-func (a *Artifact) GetById(id int) {
+func (a *Artifact) LoadById(id int) {
 	db.Get(a, "select * from artifact where id = ?", id)
 }
 

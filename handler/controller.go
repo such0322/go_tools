@@ -10,8 +10,8 @@ import (
 )
 
 type Controller struct {
-	data map[string]interface{}
-	tpl  string
+	Data map[string]interface{}
+	Tpl  string
 }
 
 func test(a interface{}) string {
@@ -21,20 +21,22 @@ func test(a interface{}) string {
 var funcMap = template.FuncMap{
 	"test":       test,
 	"jsonDecode": libs.JsonDecode,
+	"inIntSlice": libs.InIntSlice,
 }
 
 func (c *Controller) Render(w http.ResponseWriter, r *http.Request) {
-	if c.tpl == "" {
-		c.tpl = r.URL.Path
+	c.Data["currentUser"] = libs.CurrentUser
+	if c.Tpl == "" {
+		c.Tpl = r.URL.Path
 	}
-	tpl := strings.Split(c.tpl, "/")
+	tpl := strings.Split(c.Tpl, "/")
 	file := bytes.Buffer{}
 	file.WriteString("templates")
-	file.WriteString(c.tpl)
+	file.WriteString(c.Tpl)
 	file.WriteString(".html")
 
 	tmpl := template.Must(template.New(tpl[len(tpl)-1]).Funcs(funcMap).ParseFiles(file.String(), "templates/header.html", "templates/footer.html"))
-	if err := tmpl.ExecuteTemplate(w, c.tpl, c.data); err != nil {
+	if err := tmpl.ExecuteTemplate(w, c.Tpl, c.Data); err != nil {
 		log.Fatal(err)
 	}
 

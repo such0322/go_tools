@@ -10,7 +10,9 @@ type IndexController struct {
 }
 
 func (c Controller) Index(w http.ResponseWriter, r *http.Request) {
-	c.tpl = "/index"
+
+	c.Tpl = "/index"
+	c.Data = make(map[string]interface{})
 	c.Render(w, r)
 
 }

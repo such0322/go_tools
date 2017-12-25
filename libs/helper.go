@@ -5,6 +5,15 @@ import (
 	"fmt"
 )
 
+func InIntSlice(slice []int, n int) bool {
+	for _, v := range slice {
+		if v == n {
+			return true
+		}
+	}
+	return false
+}
+
 func AppendUniqueInt(ints []int, new_ints ...int) []int {
 	for _, ni := range new_ints {
 		in := false

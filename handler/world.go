@@ -18,9 +18,9 @@ func (c WorldController) List(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	world := TM.World{}
-	worlds := world.LoadAll()
+	worlds := world.GetAll()
 
-	c.data = make(map[string]interface{})
-	c.data["worlds"] = worlds
+	c.Data = make(map[string]interface{})
+	c.Data["worlds"] = worlds
 	c.Render(w, r)
 }

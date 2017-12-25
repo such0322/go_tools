@@ -40,9 +40,23 @@
               <li ><a href="/mission/daily/list">日常任务</a></li>
             </ul>
           </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">后台管理 <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li ><a href="/admin/user/list">用户管理</a></li>
+              <li ><a href="/admin/rule/list">角色管理</a></li>
+              <li ><a href="/admin/power/list">权限列表</a></li>
+            </ul>
+          </li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-        <li><a href="/auth/login">Login</a></li>
+          {{if ne .currentUser.ID 0}}
+          <li><a>欢迎:{{.currentUser.Name}}</a></li>
+          <li><a href="/auth/logout">Logout</a></li>
+          {{else}}
+          <li><a href="/auth/login">Login</a></li>
+          {{end}}
+
         <!-- <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
           <ul class="dropdown-menu">

@@ -28,16 +28,16 @@ func (c GiftController) List(w http.ResponseWriter, r *http.Request) {
 	giftCodes := BMi.GiftCodes{}
 	_, pager := giftCodes.GetPage(p, 100, "/gift/list")
 
-	c.data = make(map[string]interface{})
-	c.data["CodeList"] = giftCodes.Data
-	c.data["Pager"] = template.HTML(pager)
-	c.data["MapType"] = BMi.GiftCode.GetTypeMap
+	c.Data = make(map[string]interface{})
+	c.Data["CodeList"] = giftCodes.Data
+	c.Data["Pager"] = template.HTML(pager)
+	c.Data["MapType"] = BMi.GiftCode.GetTypeMap
 	c.Render(w, r)
 }
 
 func (c GiftController) NewGift(w http.ResponseWriter, r *http.Request) {
-	c.data = make(map[string]interface{})
-	c.data["RewardType"] = bonus.RewardType
+	c.Data = make(map[string]interface{})
+	c.Data["RewardType"] = bonus.RewardType
 	c.Render(w, r)
 }
 

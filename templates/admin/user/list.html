@@ -1,0 +1,41 @@
+{{define "/admin/user/list"}}
+{{ template "header" . }}
+
+<div class="container">
+  <div class="rows">
+    <div class="col-sm-12 ">
+      <h2 >用户管理</h2>
+      <div class="col-sm-12 text-right">
+        <a class="btn btn-default" href="/admin/user/new">新用户</a>
+      </div>
+      <br/>
+      <hr/>
+
+
+
+
+      <table class="table">
+        <tr>
+          <th>ID</th>
+          <th>用户名</th>
+          <th>姓名</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+        {{ range .users}}
+        <tr>
+          <td>{{.ID}}</td>
+          <td>{{.Account}}</td>
+          <td>{{.Name}}</td>
+          <td>{{.Status}}</td>
+          <td><a class="btn btn-default btn-sm" href="/admin/user/{{.ID}}/rules">角色分配</a></td>
+        </tr>
+        {{end}}
+      </table>
+    </div>
+
+  </div>
+</div>
+
+{{ template "footer" . }}
+{{ end}}

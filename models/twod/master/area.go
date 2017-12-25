@@ -23,7 +23,7 @@ type Area struct {
 
 type Areas []Area
 
-func (m *Area) GetById(id int) {
+func (m *Area) LoadById(id int) {
 	rows := db.QueryRowx("select * from stage where id = ?", id)
 	if err := rows.Err(); err != nil {
 		panic(err)
@@ -31,7 +31,7 @@ func (m *Area) GetById(id int) {
 	rows.StructScan(&m.AreaFields)
 }
 
-func (m Area) LoadByWorldID(worldID int) *Areas {
+func (m Area) GetByWorldID(worldID int) Areas {
 	rows, err := db.Queryx("select * from area where world_id = ?", worldID)
 	if err != nil {
 		panic(err)
@@ -44,5 +44,14 @@ func (m Area) LoadByWorldID(worldID int) *Areas {
 		}
 		areas = append(areas, m)
 	}
-	return &areas
+	return areas
+}
+
+func (m *Area) GetAll() Areas {
+	areas := Areas{}
+	err := db.Select(&areas, "select * from area")
+	if err != nil {
+		panic(err)
+	}
+	return areas
 }

@@ -18,30 +18,29 @@ type WorldFields struct {
 }
 type World struct {
 	WorldFields
-	Areas *Areas
+	Areas Areas
 }
 
 type Worlds []World
 
-func (m *World) GetByID(id int) *World {
+func (m *World) LoadByID(id int) {
 	rows := db.QueryRowx("select * from world where id = ?", id)
 	if err := rows.Err(); err != nil {
 		panic(err)
 	}
 	rows.StructScan(&m.WorldFields)
-	return m
 }
 
-func (m *World) LoadAreas() *Areas {
+func (m *World) LoadAreas() Areas {
 	if m.ID == 0 {
 		panic(errors.New("LoadAreas没有找到World;"))
 	}
 	area := Area{}
-	m.Areas = area.LoadByWorldID(m.ID)
+	m.Areas = area.GetByWorldID(m.ID)
 	return m.Areas
 }
 
-func (m World) LoadAll() *Worlds {
+func (m *World) GetAll() Worlds {
 	rows, err := db.Queryx("select * from world")
 	if err != nil {
 		panic(err)
@@ -49,11 +48,12 @@ func (m World) LoadAll() *Worlds {
 	defer rows.Close()
 	worlds := Worlds{}
 	for rows.Next() {
-		err = rows.StructScan(&m.WorldFields)
+		w := World{}
+		err := rows.StructScan(&w.WorldFields)
 		if err != nil {
 			continue
 		}
-		worlds = append(worlds, m)
+		worlds = append(worlds, w)
 	}
-	return &worlds
+	return worlds
 }

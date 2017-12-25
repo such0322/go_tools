@@ -8,6 +8,6 @@ type MissionController struct {
 
 func (c MissionController) DailyList(w http.ResponseWriter, r *http.Request) {
 
-	c.data = make(map[string]interface{})
+	c.Data = make(map[string]interface{})
 	c.Render(w, r)
 }
